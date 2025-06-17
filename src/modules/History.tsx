@@ -17,20 +17,20 @@ import { fetchSmsHistory } from '../api';
 import { StatusDot } from '../components'
 
 interface HistoryEntry {
-	smsRequest: {
-		accountId: string
-		phoneNumber: string
-		message: string
-	},
-	date: string
-	status: 'success' | 'rejected'
+  smsRequest: {
+    accountId: string
+    phoneNumber: string
+    message: string
+  },
+  date: string
+  status: 'success' | 'rejected'
 }
 
 const columnHelper = createColumnHelper<HistoryEntry>()
 
 const columns = [
   columnHelper.accessor(row => row.date, {
-		id: 'date',
+    id: 'date',
     cell: info => {
       const dateString = info.getValue()
       const dateObject = new Date(dateString)
@@ -40,9 +40,9 @@ const columns = [
     sortingFn: 'datetime',
   }),
   columnHelper.accessor(row => row.smsRequest.accountId, {
-		id: 'accountId',
+    id: 'accountId',
     cell: info => info.getValue(),
-		header: () => <span>Account ID/Provider</span>,
+    header: () => <span>Account ID/Provider</span>,
     sortingFn: 'alphanumeric',
   }),
   columnHelper.accessor(row => row.smsRequest.phoneNumber, {
@@ -52,16 +52,16 @@ const columns = [
     sortingFn: 'alphanumeric',
   }),
   columnHelper.accessor(row => row.smsRequest.message, {
-		id: 'message',
+    id: 'message',
     cell: info => info.getValue(),
     header: () => <span>Message</span>,
     sortingFn: 'alphanumeric',
   }),
-	columnHelper.accessor(row => row.status, {
-		id: 'status',
+  columnHelper.accessor(row => row.status, {
+    id: 'status',
     cell: info => <StatusDot status={info.getValue()} />,
     header: () => <span>Status</span>,
-	})
+  })
 ]
 
 const sortOptions = [
@@ -72,7 +72,7 @@ const sortOptions = [
 ]
 
 export function History() {
-	const { data, /* isFetching, error */ } = useQuery<HistoryEntry[]>({
+  const { data, /* isFetching, error */ } = useQuery<HistoryEntry[]>({
     queryKey: ['History'],
     queryFn: fetchSmsHistory,
     // Automatically refetch every half a second.
@@ -96,7 +96,7 @@ export function History() {
       })
     }, [setSorting])
 
-	const table = useReactTable({
+  const table = useReactTable({
     data: data ?? [],
     columns,
     state: {
@@ -110,8 +110,8 @@ export function History() {
     getFilteredRowModel: getFilteredRowModel(),
   })
 
-	return (
-		<div>
+  return (
+    <div>
       <SortBy
         sortOptions={sortOptions}
         sorting={sorting}
@@ -119,7 +119,7 @@ export function History() {
       />
       <FilterBy table={table} />
 
-			<table style={{ borderSpacing: '8px' }}>
+      <table style={{ borderSpacing: '8px' }}>
         <thead>
           {table.getHeaderGroups().map(headerGroup => (
             <tr key={headerGroup.id}>
@@ -164,8 +164,8 @@ export function History() {
           ))}
         </tfoot>
       </table>
-		</div>
-	)
+    </div>
+  )
 }
 
 interface SortByProps {
