@@ -34,7 +34,7 @@ const columns = [
     cell: info => {
       const dateString = info.getValue()
       const dateObject = new Date(dateString)
-      return dateObject.toISOString()
+      return `${dateObject.toLocaleDateString()} ${dateObject.toLocaleTimeString()}`
     },
     header: () => <span>Date</span>,
     sortingFn: 'datetime',
@@ -70,6 +70,48 @@ const sortOptions = [
   { id: 'accountId', label: 'Account ID' },
   { id: 'phoneNumber', label: 'Phone Number' },
 ]
+
+const filters = {
+  accountId: (table: Table<HistoryEntry>) => (
+    <input
+      placeholder='Filter Account ID'
+      value={table.getColumn('accountId')?.getFilterValue() as string || ''}
+      onChange={e =>
+        table.getColumn('accountId')?.setFilterValue(e.target.value)
+      }
+    />
+  ),
+  phoneNumber: (table: Table<HistoryEntry>) => (
+    <input
+      placeholder='Filter Phone Number'
+      value={table.getColumn('phoneNumber')?.getFilterValue() as string || ''}
+      onChange={e =>
+        table.getColumn('phoneNumber')?.setFilterValue(e.target.value)
+      }
+    />
+  ),
+  message: (table: Table<HistoryEntry>) => (
+    <input
+      placeholder='Filter Message'
+      value={table.getColumn('message')?.getFilterValue() as string || ''}
+      onChange={e =>
+        table.getColumn('message')?.setFilterValue(e.target.value)
+      }
+    />
+  ),
+  status: (table: Table<HistoryEntry>) => (
+    <select
+      value={table.getColumn('status')?.getFilterValue() as string || ''}
+      onChange={e =>
+        table.getColumn('status')?.setFilterValue(e.target.value || undefined)
+      }
+    >
+      <option value=''>All Statuses</option>
+      <option value='success'>Success</option>
+      <option value='rejected'>Rejected</option>
+    </select>
+  )
+}
 
 export function History() {
   const { data, /* isFetching, error */ } = useQuery<HistoryEntry[]>({
@@ -117,20 +159,27 @@ export function History() {
         sorting={sorting}
         handleSortToggle={handleSortToggle}
       />
-      <FilterBy table={table} />
 
       <table style={{ borderSpacing: '8px' }}>
         <thead>
           {table.getHeaderGroups().map(headerGroup => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map(header => (
-                <th key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                <th
+                  key={header.id}
+                  style={{
+                    minWidth: header.id === 'date' ? '250px' : undefined,
+                  }}
+                >
+                  <div>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                    {filters[header.id]?.(table)}
+                  </div>
                 </th>
               ))}
             </tr>
@@ -147,22 +196,6 @@ export function History() {
             </tr>
           ))}
         </tbody>
-        <tfoot>
-          {table.getFooterGroups().map(footerGroup => (
-            <tr key={footerGroup.id}>
-              {footerGroup.headers.map(header => (
-                <th key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.footer,
-                        header.getContext()
-                      )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </tfoot>
       </table>
     </div>
   )
@@ -196,52 +229,5 @@ const SortBy = ({
         </label>
       ))}
     </div>
-  )
-}
-
-interface FilterByProps {
-  table: Table<HistoryEntry>
-}
-
-const FilterBy = ({
-  table,
-}: FilterByProps) => {
-  return (
-    <div style={{ margin: '1rem 0' }}>
-        <strong>Filter By:</strong>
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
-          <input
-            placeholder='Filter Account ID'
-            value={table.getColumn('accountId')?.getFilterValue() as string || ''}
-            onChange={e =>
-              table.getColumn('accountId')?.setFilterValue(e.target.value)
-            }
-          />
-          <input
-            placeholder='Filter Phone Number'
-            value={table.getColumn('phoneNumber')?.getFilterValue() as string || ''}
-            onChange={e =>
-              table.getColumn('phoneNumber')?.setFilterValue(e.target.value)
-            }
-          />
-          <input
-            placeholder='Filter Message'
-            value={table.getColumn('message')?.getFilterValue() as string || ''}
-            onChange={e =>
-              table.getColumn('message')?.setFilterValue(e.target.value)
-            }
-          />
-          <select
-            value={table.getColumn('status')?.getFilterValue() as string || ''}
-            onChange={e =>
-              table.getColumn('status')?.setFilterValue(e.target.value || undefined)
-            }
-          >
-            <option value=''>All Statuses</option>
-            <option value='success'>Success</option>
-            <option value='rejected'>Rejected</option>
-          </select>
-        </div>
-      </div>
   )
 }
