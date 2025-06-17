@@ -1,30 +1,8 @@
-# SMS Rate Limiter ASP .NET Core Microservice
+# SMS Rate Limiter Front End
 
-The front end to this project can be found here: https://github.com/pbrooks04/SmsRateLimiterUI
+This React & TypeScript project is the front end to my C# ASP .NET Core service which can be found here: https://github.com/pbrooks04/SmsRateLimiter/tree/master/SmsRateLimiter
 
 ## Purpose
+To provide an interface to compliment the SMS rate limiter service. This UI allows a mock message to be sent and displays the history of the records that have been sent. The history results can be sorted and filtered.
 
-This microservice is intended to serve as middleware for an SMS sending program. The goal of this microservice is to restrict request rate limits by two variables, `phoneNumber` and `accountId`. Requests are limited by these values and sending too many requests within a timeframe with a constant `phoneNumber` or `accountId` causes the service to return a 429 response.
-
-## Endpoints
-
-To mock sending an SMS request:
-```
-POST /api/sms/send
-BODY: {
-  accountId: string
-  phoneNumber: string
-  message: string
-}
-```
-
-To retreive the history log of the most recent 500 entries:
-```
-GET /api/history
-```
-
-## Tests
-Tests are included in `SmsRateLimiter.Test`. They ensure that the service is able to send an SMS and that rates are applied based on the `phoneNumber` and `accountId` fields.
-
-## Running the program
-At the time of writing, I've just been running it locally in development mode with Visual Studio.
+The form provides an example of simple validation as it ensures required fills have been filled and that phone numbers consist of 10 digits.
